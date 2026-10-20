@@ -12,6 +12,6 @@ on:
 jobs:
   build:
     name: Build Artifact
-    uses: pareshp-org/control-plane/.github/workflows/build.yml@main
+    uses: lumiverse-org/control-plane/.github/workflows/build.yml@main
     with:
       ref: ${{ inputs.ref || github.sha }}

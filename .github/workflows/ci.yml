@@ -10,7 +10,7 @@ on:
 jobs:
   ci:
     name: Continuous Integration
-    uses: pareshp-org/control-plane/.github/workflows/reusable-ci.yml@main
+    uses: lumiverse-org/control-plane/.github/workflows/reusable-ci.yml@main
     with:
       product_id: "product-template"
       environment: "ci"
