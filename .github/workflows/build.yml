@@ -1,17 +1,50 @@
-name: Build
+# L2-T302 — templates/workflows/build.yml
+# Per-product caller for build. Consumed by create-product (Lane 3) at product creation.
+# Substitution performed by create-product, never by Lane 2.
+# Tokens: lumiverse-org/control-plane workflows/v1 product-template main lumiverse-org/product-template
+# §0.5: caller job name is the authoritative context name.
+# §33.3 L2870-2886: consumed by pinned tag, never by branch.
+# No token may appear inside a GitHub Actions ${ } expression.
+
+name: Build — product-template
 
 on:
+  push:
+    branches:
+      - "main"
+  pull_request:
   workflow_dispatch:
-  workflow_call:
-    inputs:
-      ref:
-        type: string
-        required: false
-        default: ""
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  build:
-    name: Build Artifact
-    uses: lumiverse-org/control-plane/.github/workflows/build.yml@main
+  artifact-digest-recorded:
+    name: artifact-digest-recorded
+    uses: lumiverse-org/control-plane/.github/workflows/build.yml@workflows/v1
     with:
-      ref: ${{ inputs.ref || github.sha }}
+      product: "product-template"
+      identity_mode: "digest"
+      image_repo: "ghcr.io/lumiverse-org/product-template"
+      dockerfile: "Dockerfile"
+      build_context: "."
+      control_plane_ref: "workflows/v1"
+      job: "build"
+    secrets:
+      control_plane_read_token: ${ secrets.CONTROL_PLANE_READ_TOKEN || secrets.GITHUB_TOKEN }
+
+  sbom-emitted:
+    name: sbom-emitted
+    needs: artifact-digest-recorded
+    uses: lumiverse-org/control-plane/.github/workflows/build.yml@workflows/v1
+    with:
+      product: "product-template"
+      identity_mode: "digest"
+      image_repo: "ghcr.io/lumiverse-org/product-template"
+      dockerfile: "Dockerfile"
+      build_context: "."
+      control_plane_ref: "workflows/v1"
+      job: "sbom-emitted"
+    secrets:
+      control_plane_read_token: ${ secrets.CONTROL_PLANE_READ_TOKEN || secrets.GITHUB_TOKEN }
