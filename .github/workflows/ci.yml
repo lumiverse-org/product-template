@@ -1,4 +1,4 @@
-name: CI
+name: ci
 
 on:
   push:
@@ -7,12 +7,114 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: ci-product-template-${{ github.ref }}
+  cancel-in-progress: true
+
+# --- Phase 4 contexts ---
+
 jobs:
-  ci:
-    name: Continuous Integration
-    uses: lumiverse-org/control-plane/.github/workflows/reusable-ci.yml@main
+  unit-tests:
+    name: unit-tests
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
     with:
-      product_id: "product-template"
-      environment: "ci"
-    secrets:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      job: unit-tests
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  integration-tests:
+    name: integration-tests
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: integration-tests
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  build:
+    name: build
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: build
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  security-scan:
+    name: security-scan
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: security-scan
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  licence-scan:
+    name: licence-scan
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: licence-scan
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  slopsquat-check:
+    name: slopsquat-check
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: slopsquat-check
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  contract-validation:
+    name: contract-validation
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: contract-validation
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  registry-validation:
+    name: registry-validation
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: registry-validation
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  parity-check:
+    name: parity-check
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: parity-check
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+# --- Phase 5 contexts ---
+
+  verification-contract:
+    name: verification-contract
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: verification-contract
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
+
+  seeded-defect-case:
+    name: seeded-defect-case
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v6
+    with:
+      job: seeded-defect-case
+      product_name: "product-template"
+      conformance_profile: "standard"
+    secrets: inherit
