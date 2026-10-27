@@ -32,7 +32,7 @@ jobs:
       control_plane_ref: "workflows/v1"
       job: "build"
     secrets:
-      control_plane_read_token: ${ secrets.CONTROL_PLANE_READ_TOKEN || secrets.GITHUB_TOKEN }
+      control_plane_read_token: ${{ secrets.CONTROL_PLANE_READ_TOKEN || secrets.GITHUB_TOKEN }}
 
   sbom-emitted:
     name: sbom-emitted
@@ -47,4 +47,4 @@ jobs:
       control_plane_ref: "workflows/v1"
       job: "sbom-emitted"
     secrets:
-      control_plane_read_token: ${ secrets.CONTROL_PLANE_READ_TOKEN || secrets.GITHUB_TOKEN }
+      control_plane_read_token: ${{ secrets.CONTROL_PLANE_READ_TOKEN || secrets.GITHUB_TOKEN }}

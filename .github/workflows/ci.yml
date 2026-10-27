@@ -1,24 +1,15 @@
-# templates/workflows/ci.yml — Per-product caller template.
-# Spec §33.2 L2854-2869, §33.3 L2870-2886 (consumption by pinned tag).
-# Substituted by: create-product (Lane 3). Lane 2 never renders this into a product.
-# Placeholder syntax: double-brace UPPER_SNAKE_CASE — see PLACEHOLDERS.yaml.
-#
-# RULES (all binding):
-#   - No token inside ${{ }} expression
-#   - No if:, no path filter on any job
-#   - Every uses: of the control plane is pinned to workflows/v1 (never a branch)
-#   - "no work was needed is an explicit recorded success, never a skip" (§33.2)
-
 name: ci
 
 on:
   push:
-    branches: ['main']
+    branches: [main]
   pull_request:
-    types: [opened, synchronize, reopened]
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
+  packages: write
 
 concurrency:
   group: ci-product-template-${{ github.ref }}
@@ -29,7 +20,7 @@ concurrency:
 jobs:
   unit-tests:
     name: unit-tests
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: unit-tests
       product_name: "product-template"
@@ -38,7 +29,7 @@ jobs:
 
   integration-tests:
     name: integration-tests
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: integration-tests
       product_name: "product-template"
@@ -47,7 +38,7 @@ jobs:
 
   build:
     name: build
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: build
       product_name: "product-template"
@@ -56,7 +47,7 @@ jobs:
 
   security-scan:
     name: security-scan
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: security-scan
       product_name: "product-template"
@@ -65,7 +56,7 @@ jobs:
 
   licence-scan:
     name: licence-scan
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: licence-scan
       product_name: "product-template"
@@ -74,7 +65,7 @@ jobs:
 
   slopsquat-check:
     name: slopsquat-check
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: slopsquat-check
       product_name: "product-template"
@@ -83,7 +74,7 @@ jobs:
 
   contract-validation:
     name: contract-validation
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: contract-validation
       product_name: "product-template"
@@ -92,7 +83,7 @@ jobs:
 
   registry-validation:
     name: registry-validation
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: registry-validation
       product_name: "product-template"
@@ -101,7 +92,7 @@ jobs:
 
   parity-check:
     name: parity-check
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: parity-check
       product_name: "product-template"
@@ -109,14 +100,10 @@ jobs:
     secrets: inherit
 
 # --- Phase 5 contexts ---
-# These callers are written now. The reusable jobs they call (verification-contract
-# and seeded-defect-case) are added to ci.yml at L2-T138.
-# The phase-5 contexts must be published before branch protection can list them (§98.2).
-# Deferring or guarding them with if: would violate §33.2 and §0.6 rule 4.
 
   verification-contract:
     name: verification-contract
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: verification-contract
       product_name: "product-template"
@@ -125,13 +112,9 @@ jobs:
 
   seeded-defect-case:
     name: seeded-defect-case
-    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v1
+    uses: lumiverse-org/control-plane/.github/workflows/ci.yml@workflows/v7
     with:
       job: seeded-defect-case
       product_name: "product-template"
       conformance_profile: "standard"
     secrets: inherit
-
-# --- Phase 6 contexts (artifact-digest-recorded, sbom-emitted) ---
-# These are emitted by templates/workflows/build.yml, not by this file.
-# They are absent here and are added by L2-T302.
